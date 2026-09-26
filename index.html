@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lexique de Valderaan</title>
+<meta name="description" content="Les mots du monde et du jeu de Valderaan, définis en une ou deux phrases.">
+<meta property="og:title" content="Lexique de Valderaan">
+<meta property="og:description" content="Les mots du monde et du jeu de Valderaan, définis en une ou deux phrases.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#7A5C3A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#EFE0BE;
+  --ground-edge:#D9B97E;
+  --paper:#FAF2DE;
+  --ink:#2B2016;
+  --ink-soft:#5C4128;
+  --muted:#7A6247;
+  --accent:#7A5C3A;
+  --rule:#CDB48A;
+  --monde:#243056;
+  --monde-bg:#DCE0EC;
+  --jeu:#6B3B1F;
+  --jeu-bg:#F0DCC4;
+  --mark:#EFC45A;
+  --mark-ink:#2B2016;
+  --term:#4A3220;
+  --focus:#243056;
+  --display:"Cinzel","Cinzel Decorative","Trajan Pro",Georgia,serif;
+  --body:"Book Antiqua","Palatino Linotype",Palatino,"EB Garamond",Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0F1526; --ground-edge:#080C18; --paper:#161E36;
+    --ink:#ECE2CA; --ink-soft:#D6C39C; --muted:#A8977A; --accent:#C9A661;
+    --rule:#3A4466; --monde:#B9C6F0; --monde-bg:#232E52; --jeu:#E8B98C; --jeu-bg:#3A2A1E;
+    --mark:#C9A661; --mark-ink:#0F1526; --term:#E4C27A; --focus:#C9A661;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0F1526; --ground-edge:#080C18; --paper:#161E36;
+  --ink:#ECE2CA; --ink-soft:#D6C39C; --muted:#A8977A; --accent:#C9A661;
+  --rule:#3A4466; --monde:#B9C6F0; --monde-bg:#232E52; --jeu:#E8B98C; --jeu-bg:#3A2A1E;
+  --mark:#C9A661; --mark-ink:#0F1526; --term:#E4C27A; --focus:#C9A661;
+}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:9.5rem}
+body{
+  margin:0;
+  background:var(--ground);
+  background-image:radial-gradient(ellipse at 50% 30%, transparent 55%, var(--ground-edge) 140%);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:1.125rem;
+  line-height:1.55;
+  padding-inline:16px;
+  min-height:100vh;
+}
+.page{max-width:44rem;margin-inline:auto;padding-block:2.5rem 4rem}
+
+header.masthead{text-align:center;display:grid;gap:.4rem;padding-block-end:1.25rem}
+.masthead h1{
+  font-family:var(--display);font-weight:700;letter-spacing:.08em;
+  font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.1;margin:0;color:var(--ink-soft);
+  text-wrap:balance;
+}
+.ornament{display:flex;align-items:center;gap:.75rem;justify-content:center;color:var(--accent)}
+.ornament::before,.ornament::after{content:"";height:1px;width:min(7rem,22vw);background:var(--rule)}
+.ornament span{font-size:.8rem}
+.version{font-style:italic;color:var(--muted);font-size:1rem;margin:0}
+.intro{margin:.4rem auto 0;max-width:34rem;color:var(--ink-soft);text-wrap:pretty}
+
+.mockup{
+  margin:1rem auto 0;max-width:34rem;font-size:.95rem;color:var(--ink);
+  border:1px dashed var(--accent);border-radius:4px;padding:.5rem .8rem;background:var(--paper);
+}
+
+.tools{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:5;
+  background:var(--ground);
+  padding-block:.8rem .6rem;
+  display:grid;gap:.6rem;
+  border-bottom:1px solid var(--rule);
+}
+.search{position:relative}
+.search input{
+  width:100%;font:inherit;font-size:1.1rem;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+  padding:.65rem 2.6rem .65rem .9rem;
+}
+.search input::placeholder{color:var(--muted);font-style:italic}
+.search input:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.search kbd{
+  position:absolute;right:.7rem;top:50%;transform:translateY(-50%);
+  font-family:var(--body);font-size:.8rem;color:var(--muted);
+  border:1px solid var(--rule);border-radius:3px;padding:0 .35rem;
+}
+.row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between}
+.filters{display:flex;gap:.35rem;flex-wrap:wrap}
+.filters button{
+  font:inherit;font-size:.95rem;cursor:pointer;
+  background:transparent;color:var(--ink-soft);
+  border:1px solid var(--rule);border-radius:999px;padding:.15rem .8rem;
+}
+.filters button[aria-pressed="true"]{background:var(--ink-soft);color:var(--paper);border-color:var(--ink-soft)}
+.filters button:focus-visible,.letters a:focus-visible,.copy:focus-visible,.def a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.count{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.letters{display:flex;flex-wrap:wrap;gap:.1rem .15rem;font-family:var(--display);font-size:.85rem}
+.letters a{color:var(--accent);text-decoration:none;padding:.05rem .3rem;border-radius:3px}
+.letters a:hover{background:var(--paper)}
+.letters span{color:var(--rule);padding:.05rem .3rem}
+
+main{padding-block-start:.5rem}
+section.group{padding-block-start:1.25rem}
+section.group h2{
+  font-family:var(--display);font-weight:500;color:var(--accent);
+  font-size:1.5rem;margin:0 0 .25rem;display:flex;align-items:center;gap:.8rem;
+}
+section.group h2::after{content:"";flex:1;height:1px;background:var(--rule)}
+
+.entry{
+  padding:.7rem .75rem;margin-inline:-.75rem;border-radius:6px;
+  scroll-margin-top:9.5rem;
+}
+.entry:target,.entry.flash{background:var(--paper);box-shadow:inset 3px 0 0 var(--accent)}
+.entry-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .55rem}
+.term{font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:.04em;line-height:1.25;color:var(--term);margin:0}
+.tag{
+  font-family:var(--display);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.1rem .45rem;border-radius:3px;line-height:1.4;
+}
+.tag.monde{color:var(--monde);background:var(--monde-bg)}
+.tag.jeu{color:var(--jeu);background:var(--jeu-bg)}
+.copy{
+  margin-left:auto;font:inherit;font-size:.85rem;color:var(--muted);cursor:pointer;
+  background:none;border:0;padding:.1rem .3rem;border-radius:3px;
+  opacity:.55;
+}
+.entry:hover .copy,.copy:focus-visible{opacity:1}
+.copy:hover{color:var(--accent)}
+.def{margin:.3rem 0 0;max-width:38rem;text-wrap:pretty;color:var(--ink)}
+.ref{color:var(--accent);white-space:nowrap}
+.ref::before{content:"→ "}
+.def a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+.redirect .term{font-size:1.05rem;font-weight:500}
+.redirect .def{margin:0;display:inline}
+mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 .12em;box-shadow:0 2px 0 var(--accent)}
+
+.empty{padding:2rem 0;text-align:center;color:var(--ink-soft)}
+.empty strong{color:var(--ink)}
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-size:.95rem;color:var(--muted);text-align:center}
+.toast{
+  position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  background:var(--ink-soft);color:var(--paper);padding:.45rem .9rem;border-radius:6px;font-size:.95rem;
+}
+@media (max-width:480px){
+  body{font-size:1.05rem}
+  html{scroll-padding-top:11rem}
+  .entry{scroll-margin-top:11rem}
+  .search kbd{display:none}
+  .letters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .entry{transition:background-color .6s ease}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <h1>Lexique de Valderaan</h1>
+    <div class="ornament" aria-hidden="true"><span>◆</span></div>
+    <p class="version" id="version"></p>
+    <p class="intro">Les mots du monde et du jeu, définis en une ou deux phrases. Chaque définition renvoie au chapitre du Guide du Jeune Éveillé ou à la règle qui l’explique.</p>
+    <p class="mockup" id="mockup"><strong>Maquette.</strong> Cinq entrées d’exemple pour juger la présentation. Le contenu validé viendra de la note du Lexique.</p>
+  </header>
+
+  <div class="tools">
+    <label class="search" for="q">
+      <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chercher un mot</span>
+      <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Chercher un mot : NLR, Éveil, cristaux…">
+      <kbd aria-hidden="true">/</kbd>
+    </label>
+    <div class="row">
+      <div class="filters" role="group" aria-label="Filtrer par étiquette">
+        <button type="button" id="f-tout" data-f="tout" aria-pressed="true">Tout</button>
+        <button type="button" id="f-monde" data-f="Monde" aria-pressed="false">Monde</button>
+        <button type="button" id="f-jeu" data-f="Jeu" aria-pressed="false">Jeu</button>
+      </div>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <nav class="letters" id="letters" aria-label="Aller à une lettre"></nav>
+  </div>
+
+  <main id="list"></main>
+
+  <footer>
+    <p id="footer-version"></p>
+    <p>Un mot vous manque ? Signalez-le au staff : il entrera dans une prochaine version.</p>
+  </footer>
+</div>
+
+<!--
+  SOURCE DU LEXIQUE
+  Ce bloc reprend tel quel le contenu de la note 00_CANON_Lexique (une entrée par ligne).
+  Ne pas retoucher à la main : on le régénère depuis la note.
+  Formats reconnus :
+    **Terme** · *Monde* — Définition. → Renvoi
+    **Abréviation** → voir *Terme*
+-->
+<script type="text/plain" id="source">
+version: 0
+date: 25/09/2026
+maquette: oui
+
+**Éveil** · *Monde* — Première manifestation magique d’une personne. Elle n’implique ni maîtrise ni puissance. → Guide, chap. V
+**Cristaux blancs / rouges** · *Monde* — Concentrations d’Essence Naturelle (blancs) ou Arcanique (rouges). Ils conservent l’Essence, ils ne la produisent pas.
+**LOOC** · *Jeu* — Canal hors personnage lu seulement par les joueurs proches de vous. Pour une question rapide sans casser la scène. → Règle 16
+**New Life Rule (NLR)** · *Jeu* — Après une mort qui n’est pas définitive, votre personnage oublie ce qui l’a précédée et ne revient pas sur les lieux. → Règle 14
+**NLR** → voir *New Life Rule*
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var src = document.getElementById("source").textContent;
+  var fold = function(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(); };
+  var slug = function(s){ return fold(s).replace(/[’']/g,"-").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); };
+  var esc = function(s){ return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); };
+  var collator = new Intl.Collator("fr",{sensitivity:"base"});
+
+  /* 1. Lecture de la source */
+  var meta = {}, entries = [];
+  src.split(/\r?\n/).forEach(function(line){
+    line = line.trim();
+    if(!line) return;
+    var m = line.match(/^([a-zé]+):\s*(.+)$/i);
+    if(m && line.indexOf("**") !== 0){ meta[m[1].toLowerCase()] = m[2]; return; }
+    var full = line.match(/^\*\*(.+?)\*\*\s*·\s*\*(Monde|Jeu)\*\s*[—–-]\s*(.+?)(?:\s*→\s*(.+))?$/);
+    if(full){ entries.push({term:full[1], tag:full[2], def:full[3], ref:full[4]||"", redirect:false}); return; }
+    var red = line.match(/^\*\*(.+?)\*\*\s*→\s*(.+)$/);
+    if(red){ entries.push({term:red[1], tag:"", def:"", ref:red[2], redirect:true}); return; }
+    console.warn("Ligne non reconnue :", line);
+  });
+
+  /* 2. Identifiants et alias (pour les liens « voir … ») */
+  var alias = {};
+  entries.forEach(function(e){
+    var base = e.term.replace(/\s*\(.*?\)\s*/g," ").trim();
+    e.id = slug(base);
+    e.search = fold(e.term + " " + e.def);
+    var keys = [e.term, base].concat(base.split(/\s*\/\s*/));
+    var par = e.term.match(/\((.+?)\)/); if(par) keys.push(par[1]);
+    if(!e.redirect) keys.forEach(function(k){ alias[slug(k)] = e.id; });
+  });
+  entries.sort(function(a,b){ return collator.compare(a.term,b.term); });
+  entries.forEach(function(e){ e.letter = fold(e.term).charAt(0).toUpperCase(); });
+
+  /* 3. Rendu */
+  var inline = function(s){
+    return esc(s).replace(/\*(.+?)\*/g,function(_,t){
+      var id = alias[slug(t)];
+      return id ? '<a href="#'+id+'">'+t+'</a>' : "<em>"+t+"</em>";
+    });
+  };
+  var renderRef = function(r){
+    if(!r) return "";
+    var v = r.match(/^voir\s+(.+)$/i);
+    if(v){
+      var t = v[1].replace(/^\*|\*$/g,""), id = alias[slug(t)];
+      return ' <span class="ref">voir '+(id?'<a href="#'+id+'">'+esc(t)+'</a>':"<em>"+esc(t)+"</em>")+'</span>';
+    }
+    return ' <span class="ref">'+inline(r)+'</span>';
+  };
+  var highlight = function(text,q){
+    if(!q) return esc(text);
+    var f = fold(text), i = f.indexOf(q);
+    if(i<0) return esc(text);
+    return esc(text.slice(0,i))+"<mark>"+esc(text.slice(i,i+q.length))+"</mark>"+esc(text.slice(i+q.length));
+  };
+
+  var list = document.getElementById("list"), count = document.getElementById("count");
+  var letters = document.getElementById("letters"), input = document.getElementById("q");
+  var state = {q:"", f:"tout"};
+
+  var versionLine = "Lexique de Valderaan — version "+(meta.version||"?")+", à jour au "+(meta.date||"?");
+  document.getElementById("version").textContent = versionLine;
+  document.getElementById("footer-version").textContent = versionLine;
+  if(!/^oui$/i.test(meta.maquette||"")) document.getElementById("mockup").hidden = true;
+
+  function render(){
+    var q = fold(state.q.trim());
+    var shown = entries.filter(function(e){
+      if(state.f!=="tout" && !e.redirect && e.tag!==state.f) return false;
+      if(state.f!=="tout" && e.redirect && !q) return false;
+      return !q || e.search.indexOf(q)>=0 || fold(e.ref).indexOf(q)>=0;
+    });
+    var groups = {}, order = [];
+    shown.forEach(function(e){ if(!groups[e.letter]){groups[e.letter]=[];order.push(e.letter);} groups[e.letter].push(e); });
+
+    var real = shown.filter(function(e){return !e.redirect;}).length;
+    count.textContent = real+(real>1?" définitions":" définition");
+
+    if(!shown.length){
+      list.innerHTML = '<p class="empty">Aucune entrée pour <strong>« '+esc(state.q.trim())+' »</strong>.<br>Essayez un autre mot, une abréviation, ou retirez le filtre.</p>';
+    } else {
+      list.innerHTML = order.map(function(L){
+        return '<section class="group" id="lettre-'+L+'" aria-label="Lettre '+L+'"><h2>'+L+'</h2>'+
+          groups[L].map(function(e){
+            if(e.redirect){
+              return '<div class="entry redirect" id="'+e.id+'"><p class="def"><span class="term">'+highlight(e.term,q)+'</span>'+renderRef(e.ref)+'</p></div>';
+            }
+            return '<article class="entry" id="'+e.id+'">'+
+              '<div class="entry-head"><h3 class="term">'+highlight(e.term,q)+'</h3>'+
+              '<span class="tag '+slug(e.tag)+'">'+e.tag+'</span>'+
+              '<button type="button" class="copy" data-id="'+e.id+'" aria-label="Copier le lien vers '+esc(e.term)+'">copier le lien</button></div>'+
+              '<p class="def">'+inline(e.def)+renderRef(e.ref)+'</p></article>';
+          }).join("")+'</section>';
+      }).join("");
+    }
+    var present = {}; order.forEach(function(L){present[L]=1;});
+    letters.innerHTML = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(function(L){
+      return present[L] ? '<a href="#lettre-'+L+'">'+L+'</a>' : '<span aria-hidden="true">'+L+'</span>';
+    }).join("");
+  }
+
+  input.addEventListener("input",function(){ state.q = input.value; render(); });
+  document.querySelectorAll(".filters button").forEach(function(b){
+    b.addEventListener("click",function(){
+      state.f = b.dataset.f;
+      document.querySelectorAll(".filters button").forEach(function(o){ o.setAttribute("aria-pressed", String(o===b)); });
+      render();
+    });
+  });
+  document.addEventListener("keydown",function(ev){
+    if(ev.key==="/" && document.activeElement!==input){ ev.preventDefault(); input.focus(); }
+    if(ev.key==="Escape" && document.activeElement===input && input.value){ input.value=""; state.q=""; render(); }
+  });
+
+  var toast;
+  function say(msg){
+    if(!toast){ toast=document.createElement("div"); toast.className="toast"; toast.setAttribute("role","status"); document.body.appendChild(toast); }
+    toast.textContent=msg; toast.hidden=false;
+    clearTimeout(say.t); say.t=setTimeout(function(){toast.hidden=true;},1800);
+  }
+  list.addEventListener("click",function(ev){
+    var b = ev.target.closest(".copy"); if(!b) return;
+    var url = location.href.split("#")[0]+"#"+b.dataset.id;
+    var done = function(){ say("Lien copié"); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done,function(){ history.replaceState(null,"","#"+b.dataset.id); say("Copiez l’adresse dans la barre du navigateur"); });
+    } else { history.replaceState(null,"","#"+b.dataset.id); say("Copiez l’adresse dans la barre du navigateur"); }
+  });
+
+  function focusHash(){
+    var id = decodeURIComponent(location.hash.slice(1)); if(!id) return;
+    var el = document.getElementById(id);
+    if(!el && alias[id]) el = document.getElementById(alias[id]);
+    if(!el){ state.q=""; state.f="tout"; input.value=""; render(); el=document.getElementById(id); }
+    if(el){ el.scrollIntoView(); el.classList.add("flash"); setTimeout(function(){el.classList.remove("flash");},2200); }
+  }
+  window.addEventListener("hashchange",focusHash);
+
+  render();
+  focusHash();
+})();
+</script>
+</body>
+</html>

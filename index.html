@@ -9,6 +9,10 @@
 <meta property="og:description" content="Les mots du monde et du jeu de Valderaan, définis en une ou deux phrases.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#7A5C3A">
+<script>
+/* Mode jeu : …/lexique/?jeu (sombre) ou ?jeu=clair — pour le menu TAB de Garry's Mod */
+(function(){var p=new URLSearchParams(location.search);if(p.has("jeu")){var r=document.documentElement;r.classList.add("jeu");r.setAttribute("data-theme",p.get("jeu")==="clair"?"light":"dark");}})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap">
@@ -169,6 +173,16 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-si
   .search kbd{display:none}
   .letters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
 }
+/* Mode jeu : pas d'en-tête, recherche immédiatement visible */
+.jecompact{display:none}
+.jeu .masthead,.jeu footer,.jeu .search kbd{display:none}
+.jeu .page{padding-block:0 2rem;max-width:48rem}
+.jeu .jecompact{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.jecompact strong{font-family:var(--display);color:var(--term);font-size:1.05rem;letter-spacing:.05em}
+.jecompact span{font-size:.85rem;font-style:italic;color:var(--muted)}
+.jeu body{background-image:none}
+.jeu .tools{padding-block:.7rem .5rem}
+.jeu html{scroll-padding-top:8rem}
 @media (prefers-reduced-motion:no-preference){
   .entry{transition:background-color .6s ease}
 }
@@ -185,6 +199,7 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-si
   </header>
 
   <div class="tools">
+    <div class="jecompact"><strong>Lexique de Valderaan</strong><span id="version-jeu"></span></div>
     <label class="search" for="q">
       <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chercher un mot</span>
       <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Chercher un mot : NLR, Éveil, cristaux…">
@@ -295,6 +310,7 @@ maquette: oui
   var versionLine = "Lexique de Valderaan — version "+(meta.version||"?")+", à jour au "+(meta.date||"?");
   document.getElementById("version").textContent = versionLine;
   document.getElementById("footer-version").textContent = versionLine;
+  document.getElementById("version-jeu").textContent = "version "+(meta.version||"?")+", à jour au "+(meta.date||"?");
   if(!/^oui$/i.test(meta.maquette||"")) document.getElementById("mockup").hidden = true;
 
   function render(){
@@ -354,7 +370,7 @@ maquette: oui
   }
   list.addEventListener("click",function(ev){
     var b = ev.target.closest(".copy"); if(!b) return;
-    var url = location.href.split("#")[0]+"#"+b.dataset.id;
+    var url = location.origin+location.pathname+"#"+b.dataset.id;
     var done = function(){ say("Lien copié"); };
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(url).then(done,function(){ history.replaceState(null,"","#"+b.dataset.id); say("Copiez l’adresse dans la barre du navigateur"); });
@@ -372,6 +388,7 @@ maquette: oui
 
   render();
   focusHash();
+  if(document.documentElement.classList.contains("jeu") && !location.hash) input.focus();
 })();
 </script>
 </body>

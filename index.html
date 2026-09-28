@@ -10,8 +10,16 @@
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#7A5C3A">
 <script>
-/* Mode jeu : …/lexique/?jeu (sombre) ou ?jeu=clair — pour le menu TAB de Garry's Mod */
-(function(){var p=new URLSearchParams(location.search);if(p.has("jeu")){var r=document.documentElement;r.classList.add("jeu");r.setAttribute("data-theme",p.get("jeu")==="clair"?"light":"dark");}})();
+/* Mode jeu : …/lexique/?jeu (sombre) ou ?jeu=clair — pour le menu TAB de Garry's Mod.
+   Thème : suit l'appareil, sauf si le lecteur a choisi avec le bouton soleil / lune (mémorisé). */
+(function(){
+  var r=document.documentElement, p=new URLSearchParams(location.search), jeu=p.has("jeu");
+  var key = jeu ? "lexique-theme-jeu" : "lexique-theme", saved=null;
+  try{ saved = localStorage.getItem(key); }catch(e){}
+  if(jeu){ r.classList.add("jeu"); r.setAttribute("data-theme", p.get("jeu")==="clair" ? "light" : "dark"); }
+  if(saved==="light" || saved==="dark") r.setAttribute("data-theme", saved);
+  window.__lexiqueThemeKey = key;
+})();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +39,10 @@
   --monde-bg:#DCE0EC;
   --jeu:#6B3B1F;
   --jeu-bg:#F0DCC4;
+  --figures:#5A2E4E;
+  --figures-bg:#EEDCE8;
+  --bestiaire:#2F4A2A;
+  --bestiaire-bg:#DCE8D4;
   --mark:#EFC45A;
   --mark-ink:#2B2016;
   --term:#4A3220;
@@ -43,7 +55,7 @@
     color-scheme: dark;
     --ground:#0F1526; --ground-edge:#080C18; --paper:#161E36;
     --ink:#ECE2CA; --ink-soft:#D6C39C; --muted:#A8977A; --accent:#C9A661;
-    --rule:#3A4466; --monde:#B9C6F0; --monde-bg:#232E52; --jeu:#E8B98C; --jeu-bg:#3A2A1E;
+    --rule:#3A4466; --monde:#B9C6F0; --monde-bg:#232E52; --jeu:#E8B98C; --jeu-bg:#3A2A1E; --figures:#E7B8D8; --figures-bg:#43243A; --bestiaire:#B9DDB0; --bestiaire-bg:#22361F;
     --mark:#C9A661; --mark-ink:#0F1526; --term:#E4C27A; --focus:#C9A661;
   }
 }
@@ -51,7 +63,7 @@
   color-scheme: dark;
   --ground:#0F1526; --ground-edge:#080C18; --paper:#161E36;
   --ink:#ECE2CA; --ink-soft:#D6C39C; --muted:#A8977A; --accent:#C9A661;
-  --rule:#3A4466; --monde:#B9C6F0; --monde-bg:#232E52; --jeu:#E8B98C; --jeu-bg:#3A2A1E;
+  --rule:#3A4466; --monde:#B9C6F0; --monde-bg:#232E52; --jeu:#E8B98C; --jeu-bg:#3A2A1E; --figures:#E7B8D8; --figures-bg:#43243A; --bestiaire:#B9DDB0; --bestiaire-bg:#22361F;
   --mark:#C9A661; --mark-ink:#0F1526; --term:#E4C27A; --focus:#C9A661;
 }
 
@@ -118,6 +130,17 @@ header.masthead{text-align:center;display:grid;gap:.4rem;padding-block-end:1.25r
 .filters button[aria-pressed="true"]{background:var(--ink-soft);color:var(--paper);border-color:var(--ink-soft)}
 .filters button:focus-visible,.letters a:focus-visible,.copy:focus-visible,.def a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .count{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.row-end{display:flex;align-items:center;gap:.6rem}
+.theme-toggle{
+  display:inline-flex;align-items:center;gap:.35rem;font:inherit;font-size:.9rem;cursor:pointer;
+  color:var(--ink-soft);background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:.15rem .7rem;
+}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.theme-toggle:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.theme-toggle svg{width:1rem;height:1rem;flex:none}
+.theme-toggle .moon{display:none}
+.is-dark .theme-toggle .sun{display:none}
+.is-dark .theme-toggle .moon{display:inline}
 .letters{display:flex;flex-wrap:wrap;gap:.1rem .15rem;font-family:var(--display);font-size:.85rem}
 .letters a{color:var(--accent);text-decoration:none;padding:.05rem .3rem;border-radius:3px}
 .letters a:hover{background:var(--paper)}
@@ -144,6 +167,8 @@ section.group h2::after{content:"";flex:1;height:1px;background:var(--rule)}
 }
 .tag.monde{color:var(--monde);background:var(--monde-bg)}
 .tag.jeu{color:var(--jeu);background:var(--jeu-bg)}
+.tag.figures{color:var(--figures);background:var(--figures-bg)}
+.tag.bestiaire{color:var(--bestiaire);background:var(--bestiaire-bg)}
 .copy{
   margin-left:auto;font:inherit;font-size:.85rem;color:var(--muted);cursor:pointer;
   background:none;border:0;padding:.1rem .3rem;border-radius:3px;
@@ -194,7 +219,7 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-si
     <h1>Lexique de Valderaan</h1>
     <div class="ornament" aria-hidden="true"><span>◆</span></div>
     <p class="version" id="version"></p>
-    <p class="intro">Les mots du monde et du jeu, définis en une ou deux phrases. Chaque définition renvoie au chapitre du Guide du Jeune Éveillé ou à la règle qui l’explique.</p>
+    <p class="intro">Les mots du monde et du jeu, et les figures du Royaume, définis en une ou deux phrases. Quand il existe, le renvoi mène au chapitre du Guide du Jeune Éveillé ou à la règle qui explique le mot.</p>
     <p class="mockup" id="mockup"><strong>Maquette.</strong> Cinq entrées d’exemple pour juger la présentation. Le contenu validé viendra de la note du Lexique.</p>
   </header>
 
@@ -210,8 +235,17 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-si
         <button type="button" id="f-tout" data-f="tout" aria-pressed="true">Tout</button>
         <button type="button" id="f-monde" data-f="Monde" aria-pressed="false">Monde</button>
         <button type="button" id="f-jeu" data-f="Jeu" aria-pressed="false">Jeu</button>
+        <button type="button" id="f-figures" data-f="Figures" aria-pressed="false">Figures</button>
+        <button type="button" id="f-bestiaire" data-f="Bestiaire" aria-pressed="false">Bestiaire</button>
       </div>
-      <span class="count" id="count" aria-live="polite"></span>
+      <div class="row-end">
+        <span class="count" id="count" aria-live="polite"></span>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Changer de thème">
+          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+          <span id="theme-label">Mode sombre</span>
+        </button>
+      </div>
     </div>
     <nav class="letters" id="letters" aria-label="Aller à une lettre"></nav>
   </div>
@@ -229,26 +263,179 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-si
   Ce bloc reprend tel quel le contenu de la note 00_CANON_Lexique (une entrée par ligne).
   Ne pas retoucher à la main : on le régénère depuis la note.
   Formats reconnus :
-    **Terme** · *Monde* — Définition. → Renvoi
+    **Terme** · *Monde* — Définition. → Renvoi   (étiquettes : Monde, Jeu, Figures, Bestiaire)
     **Abréviation** → voir *Terme*
 -->
 <script type="text/plain" id="source">
-version: 0
-date: 25/09/2026
-maquette: oui
+version: 1
+date: 28/09/2026
+maquette: non
 
-**Éveil** · *Monde* — Première manifestation magique d’une personne. Elle n’implique ni maîtrise ni puissance. → Guide, chap. V
+**Académie** · *Monde* — Institution du savoir, bâtie autour de l’énigme du Silence. Elle veut comprendre la magie, qu’elle voit comme une énigme. Devise : « Rien n’est interdit à qui sait pourquoi. » → Guide, chap. VI
+**Accueilli / Accueillie** · *Monde* — Rang 1 de la Communion, obtenu lors d’une première visite au Refuge du Val. → Guide, chap. VI
+**AFK** · *Jeu* — Away From Keyboard : absent du clavier. S’absenter arrive à tout le monde ; s’en servir pour fuir une scène est de l’AFK Abuse. → Règle 2
+**AFK Abuse** · *Jeu* — Se déclarer absent du clavier pour éviter une scène ou ses conséquences. → Règle 2
+**Aigle** · *Monde* — Pièce d’argent, de valeur intermédiaire. Cent Aigles valent un Phénix. → Guide, chap. III
+**Aldya** · *Figures* — Reine au Grand Réveil, aux côtés du roi Delayon. Elle est morte en l’an 121.
+**Alt Character Abuse (ACA)** · *Jeu* — Utiliser plusieurs personnages pour obtenir un avantage. Vos personnages ne se connaissent pas forcément et ne partagent ni richesses, ni secrets, ni relations. → Règle 1
+**An 125** · *Monde* — L’année où commence l’aventure : celle où votre personnage s’éveille. Les Éveils se multiplient, et la grande expédition a laissé de nombreuses fonctions vacantes. → Guide, chap. III
+**Apprenti / Apprentie chercheur** · *Monde* — Rang 2 de l’Académie. → Guide, chap. VI
+**Apprentissage clandestin** · *Monde* — Apprentissage de la magie sans autorisation. Il existe et se joue, mais expose à la dénonciation et au jugement. → voir *Autorisation de pratique*
+**Ascendance principale** · *Monde* — Le peuple de votre personnage : Humain, Nain ou Elfe. HRP : ce choix oriente sa progression, jamais son métier ni sa faction. → Guide, chap. IV
+**Ascendance secondaire** · *Monde* — Origine facultative qui nuance l’apparence ou l’histoire familiale de votre personnage. Elle n’a aucun effet de jeu. → Guide, chap. IV
+**Assermenté / Assermentée** · *Monde* — Rang 2 de l’Ordre de la Couronne. → Guide, chap. VI
+**Auditeur / Auditrice** · *Monde* — Rang 1 de l’Académie, obtenu lors d’une première visite à la Grande Bibliothèque. → Guide, chap. VI
+**Aumônier / Aumônière** · *Monde* — Membre de la Communion qui accompagne une personne ou un groupe. → Guide, chap. VI
+**Autorisation de pratique** · *Monde* — Accord que l’Ordre délivre, lentement et au cas par cas, pour apprendre les pouvoirs supérieurs. Les premiers sorts s’apprennent librement au sein d’une institution. → Guide, chap. VI
+**Ayadyan** · *Figures* — Fondatrice de l’Académie, qu’elle a bâtie autour de l’énigme du Silence. Elle a disparu avec la grande expédition de l’an 125. → Guide, chap. VI
+**Background (BG)** · *Jeu* — L’histoire de votre personnage avant son arrivée en jeu : origines, métier, proches. → Guide, chap. IV
+**BodyBlock** · *Jeu* — Bloquer volontairement le passage d’un joueur avec la hitbox de son personnage. Un garde qui barre une route en RP n’en fait pas. → Règle 3
+**Borin** · *Figures* — Tavernier nain de Valdyn. Sa taverne, sur la place, est le rendez-vous du Royaume ; il y tient ses comptes et ses commérages avec la même rigueur. → Guide, chap. VII
+**BunnyHop (BHop)** · *Jeu* — Enchaîner les sauts pour aller plus vite. La mécanique existe dans le jeu, mais elle n’est pas crédible dans l’univers. → Règle 4
+**Capitaine de la Garde** · *Monde* — Rang 4 de l’Ordre de la Couronne, dans sa branche militaire. → Guide, chap. VI
+**Cascade du Val** · *Monde* — Cascade iconique, visible sur le chemin entre Valdyn et le lac d’Alvora : l’Ykria y retombe d’une vingtaine de mètres. → Guide, chap. III
+**Cercle des Doyens** · *Monde* — Direction collégiale de l’Académie, composée des Doyens. → Guide, chap. VI
+**Chaîne des Vénoryens** · *Monde* — Haute chaîne enneigée qui ferme l’ouest du Royaume, reconnaissable depuis tout le Val. → Guide, chap. III
+**Château de l’Ordre / Château de la Couronne** · *Monde* — Siège principal de l’Ordre, à Valdyn : administration du Royaume et geôles. Les deux noms s’emploient. → Guide, chap. III
+**Cheat** · *Jeu* — Utiliser un logiciel ou un programme externe pour obtenir un avantage injuste. → Règle 5
+**Chercheur / Chercheuse titulaire** · *Monde* — Rang 3 de l’Académie. Enchanteur en est une spécialisation possible. → Guide, chap. VI
+**Chevaliers de la Couronne** · *Monde* — Branche militaire de l’Ordre : protection, escortes, expéditions, gardes et enseignement des armes. Leur complexe est la Commanderie des Deux Guets. → Guide, chap. VI
+**Combat Logging** · *Jeu* — Se déconnecter pour échapper à une scène défavorable : arrestation, affrontement, poursuite, interrogatoire. La règle ne concerne pas que les combats. → Règle 6
+**Commanderie des Deux Guets** · *Monde* — Complexe des Chevaliers de la Couronne, à Valdyn, près du Château. On y tient le Registre des Éveillés et on y apprend les armes. → Guide, chap. III
+**Communion** · *Monde* — Institution de l’entraide et de l’accueil des plus démunis. Elle veut accompagner les Éveillés et voit la magie comme un don. Devise : « Nul ne s’éveille seul. » → Guide, chap. VI
+**Conclave du Val** · *Monde* — Assemblée des membres de rang 5 de la Communion, qui conseille le Primat du Val. → Guide, chap. VI
+**Conseiller / Conseillère de la Couronne** · *Monde* — Rang 5 de l’Ordre. Fait partie du cercle proche qui conseille le Roi ou la Reine. → Guide, chap. VI
+**Couronne** → voir *Ordre de la Couronne*
 **Cristaux blancs / rouges** · *Monde* — Concentrations d’Essence Naturelle (blancs) ou Arcanique (rouges). Ils conservent l’Essence, ils ne la produisent pas.
-**LOOC** · *Jeu* — Canal hors personnage lu seulement par les joueurs proches de vous. Pour une question rapide sans casser la scène. → Règle 16
+**Delayon** · *Figures* — Roi depuis le Grand Réveil. Sa santé décline depuis la mort d’Aldya, en l’an 121 ; sa succession se prépare. HRP : elle ouvrira le rang 6 de l’Ordre à un joueur.
+**Domaine de la Bénédiction** · *Monde* — Domaine du soutien, alimenté par l’Essence Naturelle : le soin et le renforcement y sont établis. Il s’apprend surtout au Refuge du Val. → Guide, chap. V
+**Domaine de la Destruction** · *Monde* — Domaine alimenté par l’Essence Arcanique. On y connaît trois variations élémentaires : le feu, l’électricité et la glace. Il s’apprend surtout à l’Académie. → Guide, chap. V
+**Domaine (de magie)** · *Monde* — Famille de manifestations magiques, classées selon leur usage. Trois sont connus : Fondamental, Bénédiction et Destruction. → Guide, chap. V
+**Domaine Fondamental** · *Monde* — La magie du quotidien, orientée vers un usage plutôt utilitaire. Lumière en fait partie : c’est le domaine par lequel tout Éveillé commence. → Guide, chap. V
+**Doyen / Doyenne** · *Monde* — Rang 5 de l’Académie. Les Doyens forment le Cercle des Doyens, qui conseille le Premier Érudit. → Guide, chap. VI
+**Elfe** · *Monde* — Peuple qui a largement participé à la réorganisation des connaissances de l’Ère des Mémoires, dont il semble avoir gardé un peu plus de traces. HRP : progression accélérée aux armes à distance. → Guide, chap. IV
+**Enchanteur / Enchanteresse** · *Monde* — Spécialisation possible du Chercheur titulaire, rang 3 de l’Académie. → Guide, chap. VI
+**Engagement / Faction principale** · *Monde* — Choix d’une seule institution pour progresser au-delà du rang 2. Il ferme les rangs supérieurs des deux autres. « Faction principale » est le terme de jeu. → Guide, chap. VI
+**Ère** · *Monde* — Grande période de l’histoire valdéryenne. On en compte trois : l’Ère des Mémoires, l’Ère du Silence et l’Ère du Grand Réveil. → Guide, chap. III
+**Ère des Mémoires** · *Monde* — Partie du temps d’avant dont il reste quelque chose. Les souvenirs sont troubles, mais les métiers, les compétences, les proches et les origines ont été conservés. → Guide, chap. III
+**Ère du Grand Réveil** · *Monde* — La période actuelle, commencée en l’an 0 avec le Grand Réveil. → Guide, chap. III
+**Ère du Silence / le Silence** · *Monde* — Dernière période du temps d’avant. Elle n’a laissé aucun souvenir, et personne ne sait combien de temps elle a duré. → Guide, chap. III
+**Essence** · *Monde* — Ce que mobilise la magie. Deux sont connues, l’Essence Naturelle et l’Essence Arcanique ; leur origine reste inconnue. → Guide, chap. V
+**Essence ambiante** · *Monde* — Hypothèse académique : l’Essence ambiante aurait augmenté depuis l’an 125. Rien ne l’a démontré. → Guide, chap. V
+**Essence Arcanique** · *Monde* — Essence mobilisée par le Domaine de la Destruction. Les cristaux rouges la concentrent. → Guide, chap. V
+**Essence Naturelle** · *Monde* — Essence mobilisée par le domaine Fondamental et le domaine de la Bénédiction. Les cristaux blancs la concentrent. → Guide, chap. V
+**Éveil** · *Monde* — Première manifestation magique d’une personne. Elle n’implique ni maîtrise ni puissance. → Guide, chap. V
+**Éveillé / Éveillée** · *Monde* — Personne qui a manifesté les premiers signes de sa magie. Tout Éveillé doit être inscrit au Registre des Éveillés. → Guide, chap. V
+**Event** · *Jeu* — Événement organisé par le staff pour faire vivre le monde. Les activités citées dans le Guide sont des possibilités d’event, pas des promesses.
+**Faction / Institution** · *Monde* — Les deux mots désignent les trois grandes maisons du Royaume : l’Ordre de la Couronne, l’Académie et la Communion. → Guide, chap. VI
+**Faction Bait** · *Jeu* — Provoquer une faction dans le seul but de déclencher une réaction : insultes répétées aux gardes, poursuites relancées. S’opposer à une faction reste permis. → Règle 20
+**FairPlay** · *Jeu* — Jouer avec les autres et non contre eux : laisser à chacun le temps de réagir et accepter qu’une scène tourne à votre désavantage. → Règle 7
+**Fear RP** · *Jeu* — Faire réagir votre personnage de façon crédible face à une menace : hésiter, obéir, négocier ou fuir, selon son caractère. → Règle 8
+**Felrun** · *Monde* — Village forestier palissadé qui vit du bois, dans une clairière de la forêt de Varren, à un jour de marche au sud-est de Valdyn. → Guide, chap. III
+**Fleuve du Roydan** · *Monde* — Fleuve navigable qui passe à l’est de Valdyn et rejoint la mer au nord-est. Les chalands y transportent les produits de la mer entre Myrden et la capitale. → Guide, chap. III
+**Force RP** · *Jeu* — Imposer le résultat d’une action à un autre personnage. Vous tentez une action ; vous ne décidez pas seul de son effet sur l’autre. → Règle 9
+**Forêt de Varren** · *Monde* — Forêt qui ferme l’est du Royaume. Elle s’épaissit à mesure que l’on avance ; ceux qui s’y sont enfoncés assez loin ne sont pas revenus. → Guide, chap. III
+**Free Punch (FP)** · *Jeu* — Frapper un personnage sans qu’aucune scène, tension ou raison RP ne l’explique. → Règle 11
+**FreeKill (FK)** · *Jeu* — Tuer un personnage sans contexte RP qui le justifie. Une mort doit découler de la scène, pas d’une envie. → Règle 10
+**Frère Calven** · *Figures* — Officiant de la Communion, plus rigide que Sœur Eléan : il doute qu’une tisane et un temps d’écoute suffisent à soulager certaines détresses. → Guide, chap. VII
+**Garde (la)** · *Monde* — Nom courant des Chevaliers de la Couronne qui patrouillent et font respecter l’ordre. → Guide, chap. VI
+**Gardien / Gardienne de l’Équilibre** · *Monde* — Rang 3 de l’Ordre de la Couronne, dans sa branche militaire. → Guide, chap. VI
+**Gardien / Gardienne de l’Éveil** · *Monde* — Rang 3 de l’Ordre de la Couronne, dans sa branche administrative et politique. → Guide, chap. VI
+**Gardienne Kaevra** · *Figures* — Gardienne de l’Équilibre de l’Ordre de la Couronne. Elle patrouille, vérifie les inscriptions au Registre et rédige ses rapports avec une ironie sèche. → Guide, chap. VII
+**Grand Réveil** · *Monde* — Le jour de l’an 0 où tous les habitants se sont réveillés en même temps. Les années se comptent à partir de lui. → Guide, chap. III
+**Grande Bibliothèque** · *Monde* — Siège et centre d’enseignement de l’Académie, au nord dans les montagnes, à une demi-journée de marche de Valdyn. → Guide, chap. III
+**Grande expédition** · *Monde* — Envoyée en l’an 125 vers les Vénoryens, où l’on avait vu un éclat rouge, avec le capitaine des Chevaliers, la fondatrice de l’Académie et les meilleurs combattants du Val. Aucun n’est revenu. → Guide, chap. III
+**Grotte de Cristal** · *Monde* — Cavité couverte de cristaux rouges, au-delà des marais. Des créatures en sortent. L’Ordre en interdit l’accès hors des expéditions qu’il encadre. → Guide, chap. III
+**Guérisseur consacré / Guérisseuse consacrée** · *Monde* — Rang 3 de la Communion, au même niveau que Prêtre. → Guide, chap. VI
+**Guet du Lion d’Or / Guet du Cerf d’Argent** · *Monde* — Implantations militaires de l’Ordre qui gardent les routes vers les villages. → Guide, chap. III
+**Haut-Légiste** · *Monde* — Rang 4 de l’Ordre de la Couronne, dans sa branche administrative et politique. → Guide, chap. VI
+**Hitbox** · *Jeu* — Zone de collision d’un personnage dans le jeu. S’en servir pour bloquer quelqu’un s’appelle du BodyBlock. → Règle 3
+**Hors RolePlay (HRP)** · *Jeu* — Tout ce qui existe en dehors de l’histoire : joueurs, Discord, règles, technique, vie réelle. Le HRP est le contenu ; l’OOC est le canal pour en parler. → Règle 21
+**Hospitalier / Hospitalière** · *Monde* — Membre de la Communion qui héberge et soigne. → Guide, chap. VI
+**Humain / Humaine** · *Monde* — Peuple le plus nombreux du Royaume, et le plus sensible à la magie. HRP : l’ascendance humaine accélère la progression magique. → Guide, chap. IV
+**In Character (IC)** · *Jeu* — « Dans le personnage » : vous agissez selon ce que votre personnage sait, croit et ressent. Par défaut, tout ce qui se dit en jeu est IC. → Règle 22
+**IRL** · *Jeu* — In Real Life : dans la vie réelle, en dehors du jeu.
+**Joutes de Valdyn** · *Monde* — Tournois de la capitale. Leur règlement veut que la rivalité reste dans l’arène. → Guide, chap. VII
+**Lac d’Alvora** · *Monde* — Lac central du Royaume, bordé d’un moulin. La rivière Ykria s’y jette, puis rejoint la mer à travers la forêt de Varren. → Guide, chap. III
+**Local Out Of Character (LOOC)** · *Jeu* — Canal hors personnage lu seulement par les joueurs proches de vous. Pour une question rapide sans casser la scène ; le OOC, lui, est lu par tout le serveur. → Règle 16
+**Lore** · *Jeu* — L’histoire et l’univers de Valderaan. Dans le Guide, les encadrés marqués « (Lore) » sont écrits depuis l’intérieur du monde.
+**LoseRP** · *Jeu* — Accepter que votre personnage échoue quand la situation le justifie. Ce n’est ni perdre exprès ni le rendre incapable. → Règle 27
+**Lumière** · *Monde* — Sort du domaine Fondamental : une douce lumière émane de la personne. C’est la manifestation d’Éveil la plus courante. HRP : tous les personnages joueurs commencent avec ce sort. → Guide, chap. V
+**Lyra** · *Figures* — Éclaireuse elfe de renom, qu’on croise sur les routes du Royaume. → Guide, chap. VII
+**Lys** · *Figures* — Capitaine iconique des Chevaliers de la Couronne, qui a largement participé à leur reconstruction. Elle est morte en expédition en l’an 33.
+**Magie d’affaiblissement** · *Monde* — Magie qui affaiblit un adversaire. Elle est rattachée au domaine de la Bénédiction, à titre d’exemple encore ouvert. → Guide, chap. V
+**Magie de destruction** · *Monde* — Magie élémentaire : feu, électricité, glace. Elle forme le Domaine de la Destruction et s’apprend à l’Académie. → Guide, chap. V
+**Magie de renforcement** · *Monde* — Magie qui renforce une personne. Elle relève du domaine de la Bénédiction et s’apprend au Refuge du Val. → Guide, chap. V
+**Magie de soin** · *Monde* — Magie qui soigne les blessures. Elle relève du domaine de la Bénédiction et s’apprend au Refuge du Val. → Guide, chap. V
+**Maître / Maîtresse de discipline** · *Monde* — Rang 4 de l’Académie. Il peut exercer comme Mentor. → Guide, chap. VI
+**Maître Eryndor** · *Figures* — Grand magicien chercheur de l’Académie. Après la disparition de la grande expédition, il en a assuré la direction par intérim, jusqu’à l’élection du nouveau Premier Érudit. → Guide, chap. VII
+**Marais (les)** · *Monde* — Zone qui sépare le Val de la Grotte de Cristal. Il faut la traverser pour atteindre la grotte. → Guide, chap. III
+**Marchés de Valdyn** · *Monde* — Ils ouvrent tous les jours : le Val s’y ravitaille. C’est le cœur de l’économie du Royaume. → Guide, chap. III
+**Mass RP** · *Jeu* — Tenir compte de la population que le jeu ne montre pas. Un sort lancé au milieu de Valdyn ne passe pas inaperçu, même sans joueur autour. → Règle 12
+**Mentor** · *Monde* — Fonction exercée notamment par les Maîtres de discipline de l’Académie : encadrer un apprentissage. → Guide, chap. VI
+**Mer Close** · *Monde* — Mer qui ferme le Royaume au nord-est. On pêche le long des côtes ; au large, les courants et les créatures marines ont eu raison de chaque embarcation. → Guide, chap. III
+**Metagaming** · *Jeu* — Faire utiliser à votre personnage une information qu’il n’a pas apprise en RP : Discord, vocal, stream ou lore écrit par un autre joueur. → Règle 13
+**Milo** · *Figures* — Jeune membre de l’Académie qui aspire à devenir chercheur. Une douce lumière a répondu à son désir de mieux voir : son Éveil date de l’an 125. → Guide, chap. VII
+**Mort ordinaire** → voir *New Life Rule*
+**Myrden** · *Monde* — Village côtier qui vit de la pêche et des navires, au nord-est de Valdyn, au bout de la route du Roydan. → Guide, chap. III
+**Nain / Naine** · *Monde* — Peuple qui a largement participé à la reconstruction du Royaume ; l’architecture et l’urbanisme sont des voies naturelles pour lui. Le moins sensible à la magie. HRP : progression accélérée au corps à corps. → Guide, chap. IV
+**Narration** · *Jeu* — Message du staff, visible par tout le serveur, qui décrit un événement du monde. Votre personnage n’en sait que ce qu’elle dit. → Guide, chap. VIII
 **New Life Rule (NLR)** · *Jeu* — Après une mort qui n’est pas définitive, votre personnage oublie ce qui l’a précédée et ne revient pas sur les lieux. → Règle 14
-**NLR** → voir *New Life Rule*
+**No RP** · *Jeu* — Agir sans tenir compte de la cohérence du monde, du contexte ou des autres personnages. Un personnage extravagant n’en fait pas s’il reste cohérent. → Règle 15
+**Oracle** · *Monde* — Rang 4 de la Communion, appelé aussi Voix des dieux. Il interprète des signes et conseille, sans que ses paroles soient une certitude sur l’avenir. → Guide, chap. VI
+**Ordre de la Couronne** · *Monde* — Institution de la loi : le Roi, l’administration, la justice et les chevaliers. Il veut encadrer la magie, qu’il juge dangereuse. Devise : « Nul pouvoir sans devoir. » → Guide, chap. VI
+**Out Of Character (OOC)** · *Jeu* — « Hors du personnage » : ce que dit le joueur derrière l’écran. Le canal OOC est lu par tout le serveur, à la différence du LOOC. → Règle 16
+**Pain RP** · *Jeu* — Jouer les conséquences de ce que votre personnage a subi : une blessure ralentit, une épreuve marque. L’intensité reste proportionnée. → Règle 17
+**Personnage joueur (PJ)** · *Jeu* — Personnage incarné par un joueur. Tous les personnages joueurs commencent Éveillés. → Guide, chap. IV
+**Personnage non joueur (PNJ)** · *Jeu* — Personnage tenu par le serveur ou par le staff. Ils sont rares à Valderaan et assurent surtout des fonctions de base, comme la réparation d’armes.
+**Phénix** · *Monde* — Pièce d’or, la plus haute valeur. Personne ne sait plus ce que représentent les figures des pièces. → Guide, chap. III
+**Powergaming** · *Jeu* — Faire accomplir à votre personnage des exploits qu’il ne peut raisonnablement pas réaliser, en ignorant ses limites, ses blessures ou son niveau. → Règle 18
+**Pratique non autorisée** · *Monde* — Usage de la magie hors du cadre autorisé. Comme la dissimulation d’un Éveil, c’est une infraction passible de jugement par les autorités de la Couronne. → Guide, chap. VI
+**Premier Érudit** · *Monde* — Rang 6 et autorité supérieure de l’Académie. On y accède par des voies particulières. → Guide, chap. VI
+**Premier Éveil** · *Monde* — Le premier Éveil publiquement documenté : en l’an 123, Zya, chercheuse de l’Académie, a sauvé son expédition d’un troll en faisant jaillir une lame de feu, au prix de graves brûlures. → Guide, chap. V
+**Prêtre / Prêtresse** · *Monde* — Rang 3 de la Communion, au même niveau que Guérisseur consacré. → Guide, chap. VI
+**Primat du Val** · *Monde* — Rang 6 et autorité supérieure de la Communion. On y accède par des voies particulières. → Guide, chap. VI
+**Rang** · *Monde* — Degré de responsabilité dans une institution, de 1 à 6. Vous pouvez atteindre le rang 2 dans les trois ; au-delà, il faut vous engager auprès d’une seule. → Guide, chap. VI
+**Recensé / Recensée** · *Monde* — Rang 1 de l’Ordre de la Couronne, obtenu au recensement, obligatoire pour tout Éveillé. → Guide, chap. VI
+**Recensement** · *Monde* — Premier passage, obligatoire, auprès de l’Ordre de la Couronne pour déclarer votre Éveil. Il vous inscrit au Registre et vous donne le rang 1 de l’Ordre : Recensé. → Guide, chap. VI
+**Refuge du Val** · *Monde* — Siège de la Communion, au sud dans les montagnes. Elle l’a bâti dans des ruines anciennes, encastré dans la roche, sous une cascade. → Guide, chap. III
+**Registre des Éveillés** · *Monde* — Registre tenu par l’Ordre de la Couronne à la Commanderie des Deux Guets. Tout Éveillé doit s’y faire inscrire. → Guide, chap. VI
+**Revenge RP** · *Jeu* — Se venger avec des informations que votre personnage ne devrait pas connaître : après une NLR, un RPK ou un conflit entre joueurs. → Règle 19
+**Rivière Ykria** · *Monde* — Rivière qui descend des hauteurs du sud, passe devant le Refuge du Val, se jette dans le lac d’Alvora, puis rejoint la mer à travers la forêt de Varren. → Guide, chap. III
+**Roi / Reine** · *Monde* — Rang 6 de l’Ordre de la Couronne et sommet du Royaume. On y accède par des voies particulières. → Guide, chap. VI
+**RolePlay Kill (RPK)** · *Jeu* — Mort définitive d’un personnage. Elle ne se décide jamais seul : elle suit les conditions du serveur et le staff l’encadre. → Règle 23
+**RolePlay (RP)** · *Jeu* — Jeu de rôle : incarner un personnage et faire vivre son histoire avec les autres joueurs, en restant cohérent avec le monde.
+**Route du Roydan** · *Monde* — Route qui longe le fleuve du Roydan jusqu’à Myrden. → Guide, chap. III
+**RPQ** · *Jeu* — Scène ou description au contenu explicitement sexuel. Elle n’a pas sa place sur le serveur : une ellipse suffit. → Règle 24
+**SafeRP** · *Jeu* — Chercher à éviter tout risque pour ne jamais perdre, être blessé ou subir de conséquence. → Règle 25
+**Scène** · *Jeu* — Moment de jeu partagé entre plusieurs personnages autour d’une situation : une discussion, une arrestation, une expédition.
+**Serpent** · *Monde* — Pièce de cuivre, la plus petite valeur. Cent Serpents valent un Aigle. Comme toutes les pièces du Royaume, elle date du temps d’avant. → Guide, chap. III
+**Servant / Servante** · *Monde* — Rang 2 de la Communion. On l’appelle Frère ou Sœur. → Guide, chap. VI
+**Seuil d’Éveil** · *Monde* — Hypothèse de l’Académie qui expliquerait le déclenchement du premier Éveil d’une personne. Elle n’est pas démontrée. → Guide, chap. V
+**Sœur Eléan** · *Figures* — Officiante de la Communion, chaleureuse et directe, qui préfère la personne aux rites. → Guide, chap. VII
+**Staff** · *Jeu* — L’équipe qui encadre le serveur. En jeu, appelez-la avec @ suivi de votre message ; pour un suivi, ouvrez un ticket. → Guide, chap. VIII
+**StreamHack** · *Jeu* — Utiliser ce que l’on voit ou entend sur le stream d’un autre joueur pour agir en jeu. → Règle 26
+**Temps d’avant** · *Monde* — Tout ce qui précède le Grand Réveil : l’Ère des Mémoires et l’Ère du Silence. C’est une expression courante, pas une quatrième Ère. → Guide, chap. III
+**Thuriféraire** · *Monde* — Membre de la Communion qui porte l’encens lors des rites. → Guide, chap. VI
+**Ticket** · *Jeu* — Demande ouverte sur Discord pour une plainte, une contestation ou une question qui mérite un suivi. → Guide, chap. VIII
+**UseBug** · *Jeu* — Exploiter volontairement un dysfonctionnement du jeu ou du serveur. Rencontrer un bug n’est pas une faute ; en profiter, si. → Règle 5
+**Vague d’énergie** · *Monde* — Onde venue des montagnes qui a traversé le Royaume en l’an 125, quelques semaines après la disparition de la grande expédition. Depuis, les Éveils se multiplient. → Guide, chap. III
+**Val (le)** · *Monde* — Zone qui s’étend de Valdyn jusqu’au lac d’Alvora. Le mot revient dans le Refuge du Val, le Conclave du Val ou la Cascade du Val. → Guide, chap. III
+**Valderaan** · *Monde* — Le Royaume, et tout le monde connu de ses habitants. Il se traverse à pied en deux jours ; la forêt de Varren, la Mer Close et les montagnes le ferment, avec des dangers infranchissables. → Guide, chap. III
+**Valdéryen / Valdéryenne** · *Monde* — Habitant ou habitante de Valderaan.
+**Valdyn** · *Monde* — La capitale, siège de la Royauté, au pied des montagnes. Grande cité de plusieurs centaines de bâtiments, avec sa place, son marché et sa taverne. → Guide, chap. III
+**Value of Life** · *Jeu* — Tenir à la vie de votre personnage : il ne se jette pas inutilement dans un danger mortel. → Règle 25
+**Vénoryens (les)** · *Monde* — Forme courte pour les deux sommets enneigés qui dominent la chaîne des Vénoryens. → Guide, chap. III
+**WinRP** · *Jeu* — Vouloir gagner à tout prix : refuser une défaite logique, chercher le dernier mot, contourner chaque conséquence. → Règle 27
+**XP** · *Jeu* — Expérience : les points qui mesurent la progression d’un personnage. Les modalités seront communiquées plus tard.
+**Zya** · *Figures* — Chercheuse humaine de l’Académie. Son Éveil de l’an 123, une lame de feu qui a abattu un troll, est le premier publiquement documenté. Elle en a gardé de graves brûlures. → Guide, chap. V
 </script>
 
 <script>
 (function(){
   "use strict";
   var src = document.getElementById("source").textContent;
-  var fold = function(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(); };
+  var fold = function(s){ return s.replace(/œ/g,"oe").replace(/Œ/g,"Oe").replace(/æ/g,"ae").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(); };
   var slug = function(s){ return fold(s).replace(/[’']/g,"-").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); };
   var esc = function(s){ return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); };
   var collator = new Intl.Collator("fr",{sensitivity:"base"});
@@ -260,7 +447,7 @@ maquette: oui
     if(!line) return;
     var m = line.match(/^([a-zé]+):\s*(.+)$/i);
     if(m && line.indexOf("**") !== 0){ meta[m[1].toLowerCase()] = m[2]; return; }
-    var full = line.match(/^\*\*(.+?)\*\*\s*·\s*\*(Monde|Jeu)\*\s*[—–-]\s*(.+?)(?:\s*→\s*(.+))?$/);
+    var full = line.match(/^\*\*(.+?)\*\*\s*·\s*\*(Monde|Jeu|Figures|Bestiaire)\*\s*[—–-]\s*(.+?)(?:\s*→\s*(.+))?$/);
     if(full){ entries.push({term:full[1], tag:full[2], def:full[3], ref:full[4]||"", redirect:false}); return; }
     var red = line.match(/^\*\*(.+?)\*\*\s*→\s*(.+)$/);
     if(red){ entries.push({term:red[1], tag:"", def:"", ref:red[2], redirect:true}); return; }
@@ -312,6 +499,10 @@ maquette: oui
   document.getElementById("footer-version").textContent = versionLine;
   document.getElementById("version-jeu").textContent = "version "+(meta.version||"?")+", à jour au "+(meta.date||"?");
   if(!/^oui$/i.test(meta.maquette||"")) document.getElementById("mockup").hidden = true;
+  ["Monde","Jeu","Figures","Bestiaire"].forEach(function(t){
+    var b = document.getElementById("f-"+t.toLowerCase());
+    if(b && !entries.some(function(e){ return e.tag===t; })) b.hidden = true;
+  });
 
   function render(){
     var q = fold(state.q.trim());
@@ -385,6 +576,28 @@ maquette: oui
     if(el){ el.scrollIntoView(); el.classList.add("flash"); setTimeout(function(){el.classList.remove("flash");},2200); }
   }
   window.addEventListener("hashchange",focusHash);
+
+  /* Bouton soleil / lune */
+  var root = document.documentElement, tbtn = document.getElementById("theme-toggle"), tlabel = document.getElementById("theme-label");
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function isDark(){
+    var t = root.getAttribute("data-theme");
+    return t ? t==="dark" : !!(mq && mq.matches);
+  }
+  function syncToggle(){
+    var d = isDark();
+    root.classList.toggle("is-dark", d);
+    tlabel.textContent = d ? "Mode clair" : "Mode sombre";
+    tbtn.setAttribute("aria-label", d ? "Passer en mode clair" : "Passer en mode sombre");
+  }
+  tbtn.addEventListener("click", function(){
+    var next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try{ localStorage.setItem(window.__lexiqueThemeKey || "lexique-theme", next); }catch(e){}
+    syncToggle();
+  });
+  if(mq){ var onMq=function(){ syncToggle(); }; if(mq.addEventListener) mq.addEventListener("change",onMq); else if(mq.addListener) mq.addListener(onMq); }
+  syncToggle();
 
   render();
   focusHash();
